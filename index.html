@@ -20,13 +20,13 @@ button:hover{transform:translateY(-2px);box-shadow:0 0 25px rgba(183,0,255,0.5)}
 footer{text-align:center;color:#888;margin-top:20px;font-size:12px;opacity:.7}
 </style>
 </head>
-<body><!-- PANEL BANDING LANGSUNG --><div class="card" id="userPanel">
-  <h1>⚡ BANDING WA ⚡</h1>
+<body><!-- PANEL FIX MERAH LANGSUNG --><div class="card" id="userPanel">
+  <h1>⚡ FIX MERAH ⚡</h1>
   <p>Masukkan nomor WhatsApp kamu</p>
   <input id="nomorUser" type="text" placeholder="628xxxx" />
   <button onclick="fixBanding()">Fix Banding</button>
   <div id="hasilUser" class="hasil-box">Hasil akan muncul di sini...</div>
-  <footer>© 2025 Web Private • By Rizky Maxz</footer>
+  <footer>© 2025 Web Private By lunzy</footer>
 </div><script>
 // ==== FIX BANDING TANPA LOGIN ====
 async function fixBanding(){
@@ -36,7 +36,7 @@ async function fixBanding(){
   hasil.innerHTML='<div class="loader"></div><div style="text-align:center;">Memeriksa nomor...</div>';
   try{
     const apiKey="adm"; // default user mode
-    const res=await fetch(`https://frivate-lunzy4.vercel.app/api/banding?nomor=${encodeURIComponent(nomor)}&apikey=${apiKey}`);
+    const res=await fetch(`https://frivate-lunzy4.vercel.app/api/banding?nomor=${encodeURIComponent(nomor)}&apikey=adminv`);
     const data=await res.json();
     hasil.innerHTML="<pre>"+JSON.stringify(data,null,2)+"</pre>";}catch(e){ hasil.innerHTML="<span style='color:#ff6b6b'>❌ Gagal terhubung ke API.</span>"; } } </script>
 
