@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚡ FIX MERAH ⚡</title>
+<style>
+/* Semua style tetap sama, hanya login dihapus */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{height:100vh;display:flex;justify-content:center;align-items:center;background:radial-gradient(circle at top,#0a0a1f,#050510);font-family:'Poppins',sans-serif;color:#fff;overflow:auto;}
+.card{background:rgba(20,20,40,0.75);backdrop-filter:blur(14px);border:1px solid rgba(0,255,255,0.3);border-radius:20px;padding:30px;width:90%;max-width:460px;text-align:center;box-shadow:0 0 30px rgba(0,255,255,0.25);transition:.4s;}
+h1{font-family:'Orbitron',sans-serif;background:linear-gradient(90deg,#00e1ff,#b700ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;text-shadow:0 0 10px rgba(0,255,255,0.3)}
+input{width:100%;padding:12px;margin-top:10px;border:none;outline:none;background:rgba(255,255,255,0.08);border-radius:10px;color:#fff;text-align:center;transition:.3s;font-size:15px;}
+input:focus{background:rgba(255,255,255,0.15);box-shadow:0 0 12px #00e1ff}
+button{width:100%;padding:12px;margin-top:15px;border:none;border-radius:10px;background:linear-gradient(90deg,#00e1ff,#b700ff);color:#fff;font-weight:600;cursor:pointer;transition:.3s;box-shadow:0 0 15px rgba(0,255,255,0.3);} 
+button:hover{transform:translateY(-2px);box-shadow:0 0 25px rgba(183,0,255,0.5)}
+.hasil-box{background:rgba(255,255,255,0.05);padding:15px;border-radius:10px;margin-top:15px;border:1px solid rgba(0,255,255,0.2);color:#c8f7ff;font-size:14px;word-wrap:break-word;white-space:pre-wrap;overflow-x:auto;font-family:monospace;max-width:100%;box-sizing:border-box;}
+.loader{border:3px solid rgba(255,255,255,0.15);border-top:3px solid #00e1ff;border-radius:50%;width:28px;height:28px;margin:10px auto;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer{text-align:center;color:#888;margin-top:20px;font-size:12px;opacity:.7}
+</style>
+</head>
+<body><!-- PANEL BANDING LANGSUNG --><div class="card" id="userPanel">
+  <h1>⚡ BANDING WA ⚡</h1>
+  <p>Masukkan nomor WhatsApp kamu</p>
+  <input id="nomorUser" type="text" placeholder="628xxxx" />
+  <button onclick="fixBanding()">Fix Banding</button>
+  <div id="hasilUser" class="hasil-box">Hasil akan muncul di sini...</div>
+  <footer>© 2025 Web Private • By Rizky Maxz</footer>
+</div><script>
+// ==== FIX BANDING TANPA LOGIN ====
+async function fixBanding(){
+  const nomor=document.getElementById("nomorUser").value.trim();
+  const hasil=document.getElementById("hasilUser");
+  if(!nomor){ hasil.innerHTML="<span style='color:#ff6b6b'>⚠️ Masukkan nomor!</span>"; return; }
+  hasil.innerHTML='<div class="loader"></div><div style="text-align:center;">Memeriksa nomor...</div>';
+  try{
+    const apiKey="adm"; // default user mode
+    const res=await fetch(`https://frivate-lunzy4.vercel.app/api/banding?nomor=${encodeURIComponent(nomor)}&apikey=${apiKey}`);
+    const data=await res.json();
+    hasil.innerHTML="<pre>"+JSON.stringify(data,null,2)+"</pre>";}catch(e){ hasil.innerHTML="<span style='color:#ff6b6b'>❌ Gagal terhubung ke API.</span>"; } } </script>
+
+</body>
+</html>
