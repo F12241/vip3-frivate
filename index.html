@@ -44,7 +44,6 @@ pre{white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,0.2);paddin
   <div class="card" id="loginCard">
     <div class="header">
       <div class="h-title">LOGIN PANEL</div>
-      <div class="note">Superadmin default: <strong>admin / 11</strong></div>
     </div>
 
     <div class="row">
@@ -59,7 +58,6 @@ pre{white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,0.2);paddin
     </div>
     <div style="margin-top:12px;display:flex;gap:8px">
       <button onclick="handleLogin()">Masuk</button>
-      <button class="secondary" onclick="initSampleData()">Reset Data (sample)</button>
     </div>
   </div>
 
@@ -70,6 +68,373 @@ pre{white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,0.2);paddin
       <div>
         <span id="loggedAdmin" class="badge"></span>
         <button class="small-btn secondary" onclick="handleLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- left: admin actions -->
+      <div class="col">
+        <div style="font-weight:600">Buat Admin Baru</div>
+        <input id="newAdminUser" placeholder="username">
+        <input id="newAdminPass" placeholder="password">
+        <label style="margin-top:6px">Role</label>
+        <select id="newAdminRole">
+          <option value="admin">admin</option>
+          <option value="superadmin">superadmin</option>
+        </select>
+        <button onclick="createAdmin()">Create Admin</button>
+        <div class="note">Hanya <strong>superadmin</strong> dapat membuat admin dengan role <em>superadmin</em>.</div>
+
+        <hr style="margin:14px 0;border-color:rgba(255,255,255,0.04)">
+
+        <div style="font-weight:600">Buat User Baru</div>
+        <input id="newUserName" placeholder="username user">
+        <input id="newUserPass" placeholder="password user">
+        <button onclick="createUser()">Create User</button>
+      </div>
+
+      <!-- right: lists -->
+      <div class="col">
+        <div style="font-weight:600">List Admin</div>
+        <div id="adminList" class="admin-list"></div>
+
+        <div style="margin-top:12px;font-weight:600">List User ( counts)</div>
+        <div id="userList" class="user-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USER CARD -->
+  <div class="card" id="userCard" style="display:none;">
+    <div class="header">
+      <div class="h-title">USER DASHBOARD</div>
+      <div>
+        <span id="loggedUser" class="badge"></span>
+        <button class="small-btn secondary" onclick="handleLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>Nomor WhatsApp</label>
+        <input id="nomorInput" placeholder="628xxxx">
+        <button onclick="userBanding()">Fix Banding (Ga Lunzy)</button>
+        <div id="userResult" style="margin-top:10px"></div>
+        <div class="note">Setiap kali kamu menekan tombol di atas, counter <strong>Ga Lunzy</strong> akan bertambah untuk akunmu.</div>
+      </div>
+
+      <div class="col">
+        <div style="font-weight:600">Profil</div>
+        <div style="margin-top:8px">
+          <div><strong>Username:</strong> <span id="profileName"></span></div>
+          <div style="margin-top:8px"><strong>Ga Lunzy:</strong> <span id="profileCount">0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">© 2025 Web Private • Lunzy</div>
+</div>
+
+<script>
+/* ===================== STORAGE KEYS & INIT ===================== */
+const KEY_ADMINS = 'app_admins_v1';
+const KEY_USERS = 'app_users_v1';
+const KEY_SESSION = 'app_session_v1';
+
+let currentSession = null; // { type: 'admin'|'user', username:..., role?:... }
+
+/* Inisialisasi data default bila belum ada */
+function ensureData(){
+  if(!localStorage.getItem(KEY_ADMINS)){
+    const initialAdmins = [
+      { username:'admin', password:'11', role:'superadmin' } // superadmin tidak bisa dihapus
+    ];
+    localStorage.setItem(KEY_ADMINS, JSON.stringify(initialAdmins));
+  }
+  if(!localStorage.getItem(KEY_USERS)){
+    const initialUsers = [
+      // contoh user: { username:'user1', password:'pass', total Pakai Banding:0 }
+    ];
+    localStorage.setItem(KEY_USERS, JSON.stringify(initialUsers));
+  }
+}
+ensureData();
+
+/* helper read/write */
+function getAdmins(){ return JSON.parse(localStorage.getItem(KEY_ADMINS) || '[]'); }
+function setAdmins(a){ localStorage.setItem(KEY_ADMINS, JSON.stringify(a)); }
+function getUsers(){ return JSON.parse(localStorage.getItem(KEY_USERS) || '[]'); }
+function setUsers(u){ localStorage.setItem(KEY_USERS, JSON.stringify(u)); }
+
+/* ===================== SAMPLE RESET (opsional) ===================== */
+function initSampleData(){
+  const sampleAdmins = [
+    { username:'admin', password:'11', role:'superadmin' },
+    { username:'manager1', password:'man123', role:'admin' }
+  ];
+  const sampleUsers = [
+    { username:'user1', password:'u1pass', total Pakai Banding:2 },
+    { username:'user2', password:'u2pass', total Pakai Banding:5 }
+  ];
+  setAdmins(sampleAdmins);
+  setUsers(sampleUsers);
+  alert('Data sample telah di-set. Silakan login dengan admin/11 atau manager1/man123 atau user1/u1pass (user).');
+}
+
+/* ===================== AUTH (LOGIN / LOGOUT) ===================== */
+function handleLogin(){
+  const u = document.getElementById('inpLoginUser').value.trim();
+  const p = document.getElementById('inpLoginPass').value;
+
+  if(!u || !p){ alert('Isi username & password'); return; }
+
+  // cek admin
+  const admins = getAdmins();
+  const foundAdm = admins.find(a => a.username === u && a.password === p);
+  if(foundAdm){
+    currentSession = { type:'admin', username:foundAdm.username, role:foundAdm.role };
+    localStorage.setItem(KEY_SESSION, JSON.stringify(currentSession));
+    showAdminDashboard();
+    return;
+  }
+
+  // cek user
+  const users = getUsers();
+  const foundUser = users.find(x => x.username === u && x.password === p);
+  if(foundUser){
+    currentSession = { type:'user', username:foundUser.username };
+    localStorage.setItem(KEY_SESSION, JSON.stringify(currentSession));
+    showUserDashboard();
+    return;
+  }
+
+  alert('Akun tidak ditemukan!');
+}
+
+/* logout */
+function handleLogout(){
+  currentSession = null;
+  localStorage.removeItem(KEY_SESSION);
+  showLogin();
+}
+
+/* cek session on page load */
+function loadSession(){
+  const s = localStorage.getItem(KEY_SESSION);
+  if(s){
+    try{ currentSession = JSON.parse(s); }catch(e){ currentSession = null; }
+  }
+}
+loadSession();
+
+/* ===================== UI SWITCH ===================== */
+function showLogin(){
+  document.getElementById('loginCard').style.display='block';
+  document.getElementById('adminCard').style.display='none';
+  document.getElementById('userCard').style.display='none';
+}
+function showAdminDashboard(){
+  document.getElementById('loginCard').style.display='none';
+  document.getElementById('adminCard').style.display='block';
+  document.getElementById('userCard').style.display='none';
+  document.getElementById('loggedAdmin').innerText = currentSession.username + (currentSession.role ? ' ('+currentSession.role+')' : '');
+  renderAdminList();
+  renderUserList();
+}
+function showUserDashboard(){
+  document.getElementById('loginCard').style.display='none';
+  document.getElementById('adminCard').style.display='none';
+  document.getElementById('userCard').style.display='block';
+  document.getElementById('loggedUser').innerText = currentSession.username;
+  renderUserProfile();
+}
+
+/* jika ada session aktif on load, langsung tampilkan sesuai role */
+if(currentSession){
+  if(currentSession.type === 'admin') showAdminDashboard();
+  else if(currentSession.type === 'user') showUserDashboard();
+} else {
+  showLogin();
+}
+
+/* ===================== ADMIN: CREATE ADMIN ===================== */
+function createAdmin(){
+  const u = document.getElementById('newAdminUser').value.trim();
+  const p = document.getElementById('newAdminPass').value;
+  const role = document.getElementById('newAdminRole').value;
+
+  if(!u || !p){ alert('Isi username & password admin baru'); return; }
+
+  // hanya superadmin boleh membuat superadmin
+  if(role === 'superadmin'){
+    if(!currentSession || currentSession.role !== 'superadmin'){
+      alert('Hanya superadmin yang bisa membuat superadmin.');
+      return;
+    }
+  }
+
+  let admins = getAdmins();
+  if(admins.find(a => a.username === u)){
+    alert('Username admin sudah ada');
+    return;
+  }
+
+  admins.push({ username: u, password: p, role });
+  setAdmins(admins);
+  document.getElementById('newAdminUser').value = '';
+  document.getElementById('newAdminPass').value = '';
+  renderAdminList();
+  alert('Admin berhasil dibuat.');
+}
+
+/* render admin list */
+function renderAdminList(){
+  const admins = getAdmins();
+  const el = document.getElementById('adminList');
+  el.innerHTML = '';
+  admins.forEach((a, idx) => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    const left = document.createElement('div');
+    left.innerHTML = `<strong>👤 ${a.username}</strong> <span class="note" style="margin-left:8px">[${a.role}]</span>`;
+    const right = document.createElement('div');
+    // delete button: disabled for superadmin
+    const delBtn = document.createElement('button');
+    delBtn.className = 'danger';
+    delBtn.innerText = 'Delete';
+    if(a.role === 'superadmin'){
+      delBtn.disabled = true;
+      delBtn.style.opacity = 0.5;
+      delBtn.title = 'Superadmin tidak bisa dihapus';
+    } else {
+      delBtn.onclick = () => {
+        if(!confirm(`Hapus admin "${a.username}"?`)) return;
+        let admins2 = getAdmins();
+        admins2.splice(idx,1);
+        setAdmins(admins2);
+        renderAdminList();
+      };
+    }
+    right.appendChild(delBtn);
+    div.appendChild(left);
+    div.appendChild(right);
+    el.appendChild(div);
+  });
+}
+
+/* ===================== ADMIN: CREATE USER ===================== */
+function createUser(){
+  const u = document.getElementById('newUserName').value.trim();
+  const p = document.getElementById('newUserPass').value;
+  if(!u || !p){ alert('Isi username & password user'); return; }
+
+  let users = getUsers();
+  if(users.find(x => x.username === u)){
+    alert('Username user sudah ada');
+    return;
+  }
+
+  users.push({ username: u, password: p, total Pakai Banding: 0 });
+  setUsers(users);
+  document.getElementById('newUserName').value = '';
+  document.getElementById('newUserPass').value = '';
+  renderUserList();
+  alert('User berhasil dibuat.');
+}
+
+/* render user list (admin view) */
+function renderUserList(){
+  const users = getUsers();
+  const el = document.getElementById('userList');
+  el.innerHTML = '';
+  if(users.length === 0){ el.innerHTML = '<div class="note">Belum ada user.</div>'; return; }
+  users.forEach((u, idx) => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    const left = document.createElement('div');
+    left.innerHTML = `<div><strong>👤 ${u.username}</strong></div>
+                      <div class="note">Ga Lunzy: <strong>${u.total Pakai Banding||0}</strong></div>`;
+    const right = document.createElement('div');
+    // delete button for user
+    const delBtn = document.createElement('button');
+    delBtn.className = 'danger';
+    delBtn.innerText = 'Delete';
+    delBtn.onclick = () => {
+      if(!confirm(`Hapus user "${u.username}"?`)) return;
+      let users2 = getUsers();
+      users2.splice(idx,1);
+      setUsers(users2);
+      renderUserList();
+    };
+
+    right.appendChild(delBtn);
+    div.appendChild(left);
+    div.appendChild(right);
+    el.appendChild(div);
+  });
+}
+
+/* ===================== USER: PROFILE & COUNTER ===================== */
+function renderUserProfile(){
+  const profileName = document.getElementById('profileName');
+  const profileCount = document.getElementById('profileCount');
+  const users = getUsers();
+  const me = users.find(x => x.username === currentSession.username);
+  profileName.innerText = currentSession.username;
+  profileCount.innerText = (me && me.total Pakai Banding) ? me.total Pakai Banding : 0;
+}
+
+/* ===================== USER ACTION: BANDlNG (INCREMENTS Ga Lunzy) ===================== */
+async function userBanding(){
+  const nomor = document.getElementById('nomorInput').value.trim();
+  const out = document.getElementById('userResult');
+
+  if(!nomor){ out.innerHTML = '<span style="color:#ff8b8b">Masukkan nomor!</span>'; return; }
+  out.innerHTML = '<span class="loader"></span> Memproses...';
+
+  // NOTE: Kita panggil API yang sama seperti sebelumnya — ini demo UI.
+  // Jika API bermasalah, tetap lakukan increment counter lokal agar tracking tetap berfungsi.
+  try{
+    const res = await fetch(`https://frivate-lunzy4.vercel.app/api/banding?nomor=${encodeURIComponent(nomor)}&apikey=adminv`, { method:'GET' });
+    const data = await res.json();
+    out.innerHTML = '<pre>'+JSON.stringify(data,null,2)+'</pre>';
+  }catch(err){
+    out.innerHTML = '<span style="color:#ff8b8b">Gagal menghubungkan API — hasil disimpan lokal.</span>';
+  }
+
+  // increment Ga Lunzy for current user
+  let users = getUsers();
+  const idx = users.findIndex(x => x.username === currentSession.username);
+  if(idx >= 0){
+    users[idx].total Pakai Banding = (users[idx].total Pakai Banding || 0) + 1;
+    setUsers(users);
+    renderUserProfile();
+    // jika admin sedang melihat list user, refresh juga
+    renderUserList();
+  }
+}
+
+/* ===================== ADMIN: OPTIONAL BANDlNG FROM ADMIN PANEL (tidak memengaruhi user coun ters) ===================== */
+async function adminBandingTmp(nomor, targetEl){
+  if(!nomor){ targetEl.innerHTML = '<span style="color:#ff8b8b">Masukkan nomor!</span>'; return; }
+  targetEl.innerHTML = '<span class="loader"></span> Memproses...';
+  try{
+    const res = await fetch(`https://frivate-lunzy4.vercel.app/api/banding?nomor=${encodeURIComponent(nomor)}&apikey=adminv`);
+    const data = await res.json();
+    targetEl.innerHTML = '<pre>'+JSON.stringify(data,null,2)+'</pre>';
+  }catch(e){
+    targetEl.innerHTML = '<span style="color:#ff8b8b">Gagal menghubungkan API.</span>';
+  }
+}
+
+/* ===================== HELPERS ===================== */
+/* simple sanitize (very small) */
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+
+</script>
+</body>
+</html>        <button class="small-btn secondary" onclick="handleLogout()">Logout</button>
       </div>
     </div>
 
