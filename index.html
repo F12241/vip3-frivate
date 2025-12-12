@@ -1,44 +1,439 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚡ FIX MERAH ⚡</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>⚡ PANEL WA —  Lunzy Counter</title>
 <style>
-/* Semua style tetap sama, hanya login dihapus */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@400;500;600&display=swap');
-*{margin:0;padding:0;box-sizing:border-box}
-body{height:100vh;display:flex;justify-content:center;align-items:center;background:radial-gradient(circle at top,#0a0a1f,#050510);font-family:'Poppins',sans-serif;color:#fff;overflow:auto;}
-.card{background:rgba(20,20,40,0.75);backdrop-filter:blur(14px);border:1px solid rgba(0,255,255,0.3);border-radius:20px;padding:30px;width:90%;max-width:460px;text-align:center;box-shadow:0 0 30px rgba(0,255,255,0.25);transition:.4s;}
-h1{font-family:'Orbitron',sans-serif;background:linear-gradient(90deg,#00e1ff,#b700ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;text-shadow:0 0 10px rgba(0,255,255,0.3)}
-input{width:100%;padding:12px;margin-top:10px;border:none;outline:none;background:rgba(255,255,255,0.08);border-radius:10px;color:#fff;text-align:center;transition:.3s;font-size:15px;}
-input:focus{background:rgba(255,255,255,0.15);box-shadow:0 0 12px #00e1ff}
-button{width:100%;padding:12px;margin-top:15px;border:none;border-radius:10px;background:linear-gradient(90deg,#00e1ff,#b700ff);color:#fff;font-weight:600;cursor:pointer;transition:.3s;box-shadow:0 0 15px rgba(0,255,255,0.3);} 
-button:hover{transform:translateY(-2px);box-shadow:0 0 25px rgba(183,0,255,0.5)}
-.hasil-box{background:rgba(255,255,255,0.05);padding:15px;border-radius:10px;margin-top:15px;border:1px solid rgba(0,255,255,0.2);color:#c8f7ff;font-size:14px;word-wrap:break-word;white-space:pre-wrap;overflow-x:auto;font-family:monospace;max-width:100%;box-sizing:border-box;}
-.loader{border:3px solid rgba(255,255,255,0.15);border-top:3px solid #00e1ff;border-radius:50%;width:28px;height:28px;margin:10px auto;animation:spin .8s linear infinite;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at top,#0a0a1f,#050510);
+  font-family:'Poppins',sans-serif;color:#fff;padding:20px;
+}
+.container{width:100%;max-width:980px;}
+.card{
+  background:rgba(20,20,40,0.76);backdrop-filter:blur(12px);
+  border:1px solid rgba(0,255,255,0.12);border-radius:14px;padding:20px;margin-bottom:18px;
+  box-shadow:0 6px 30px rgba(0,0,0,0.6);
+}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.h-title{font-family:'Orbitron',sans-serif;background:linear-gradient(90deg,#00e1ff,#b700ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:20px}
+.row{display:flex;gap:14px;flex-wrap:wrap}
+.col{flex:1;min-width:240px}
+input,select{width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,0.06);color:#fff;margin-top:8px}
+button{padding:10px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,#00e1ff,#b700ff);cursor:pointer;color:#fff;margin-top:8px}
+.small-btn{padding:6px 8px;border-radius:8px;border:none;cursor:pointer}
+.user-list,.admin-list{max-height:260px;overflow:auto;padding:10px;background:rgba(255,255,255,0.02);border-radius:8px;margin-top:10px}
+.item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.badge{background:rgba(255,255,255,0.04);padding:6px 8px;border-radius:8px;font-size:13px}
+.danger{background:#ff3659;color:white;padding:6px 8px;border-radius:8px;border:none;cursor:pointer}
+.secondary{background:rgba(255,255,255,0.03);color:#ddd;padding:6px 8px;border-radius:8px;border:none;cursor:pointer}
+.note{font-size:13px;color:#bfcbdc;margin-top:8px}
+.footer{font-size:12px;color:#9aa; text-align:center;margin-top:10px}
+.loader{border:3px solid rgba(255,255,255,0.12);border-top:3px solid #00e1ff;border-radius:50%;width:22px;height:22px;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
-footer{text-align:center;color:#888;margin-top:20px;font-size:12px;opacity:.7}
+pre{white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,0.2);padding:10px;border-radius:8px;margin-top:8px}
 </style>
 </head>
-<body><!-- PANEL FIX MERAH LANGSUNG --><div class="card" id="userPanel">
-  <h1>⚡ FIX MERAH ⚡</h1>
-  <p>Masukkan nomor WhatsApp kamu</p>
-  <input id="nomorUser" type="text" placeholder="628xxxx" />
-  <button onclick="fixBanding()">Fix Banding</button>
-  <div id="hasilUser" class="hasil-box">Hasil akan muncul di sini...</div>
-  <footer>© 2025 Web Private By lunzy</footer>
-</div><script>
-// ==== FIX BANDING TANPA LOGIN ====
-async function fixBanding(){
-  const nomor=document.getElementById("nomorUser").value.trim();
-  const hasil=document.getElementById("hasilUser");
-  if(!nomor){ hasil.innerHTML="<span style='color:#ff6b6b'>⚠️ Masukkan nomor!</span>"; return; }
-  hasil.innerHTML='<div class="loader"></div><div style="text-align:center;">Memeriksa nomor...</div>';
-  try{
-    const apiKey="adm"; // default user mode
-    const res=await fetch(`https://frivate-lunzy4.vercel.app/api/banding?nomor=${encodeURIComponent(nomor)}&apikey=adminv`);
-    const data=await res.json();
-    hasil.innerHTML="<pre>"+JSON.stringify(data,null,2)+"</pre>";}catch(e){ hasil.innerHTML="<span style='color:#ff6b6b'>❌ Gagal terhubung ke API.</span>"; } } </script>
+<body>
+<div class="container">
 
+  <!-- LOGIN CARD -->
+  <div class="card" id="loginCard">
+    <div class="header">
+      <div class="h-title">LOGIN PANEL</div>
+      <div class="note">Superadmin default: <strong>admin / 11</strong></div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>Username</label>
+        <input id="inpLoginUser" placeholder="username">
+      </div>
+      <div class="col">
+        <label>Password</label>
+        <input id="inpLoginPass" type="password" placeholder="password">
+      </div>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button onclick="handleLogin()">Masuk</button>
+      <button class="secondary" onclick="initSampleData()">Reset Data (sample)</button>
+    </div>
+  </div>
+
+  <!-- ADMIN CARD -->
+  <div class="card" id="adminCard" style="display:none;">
+    <div class="header">
+      <div class="h-title">ADMIN DASHBOARD</div>
+      <div>
+        <span id="loggedAdmin" class="badge"></span>
+        <button class="small-btn secondary" onclick="handleLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- left: admin actions -->
+      <div class="col">
+        <div style="font-weight:600">Buat Admin Baru</div>
+        <input id="newAdminUser" placeholder="username">
+        <input id="newAdminPass" placeholder="password">
+        <label style="margin-top:6px">Role</label>
+        <select id="newAdminRole">
+          <option value="admin">admin</option>
+          <option value="superadmin">superadmin</option>
+        </select>
+        <button onclick="createAdmin()">Create Admin</button>
+        <div class="note">Hanya <strong>superadmin</strong> dapat membuat admin dengan role <em>superadmin</em>.</div>
+
+        <hr style="margin:14px 0;border-color:rgba(255,255,255,0.04)">
+
+        <div style="font-weight:600">Buat User Baru</div>
+        <input id="newUserName" placeholder="username user">
+        <input id="newUserPass" placeholder="password user">
+        <button onclick="createUser()">Create User</button>
+      </div>
+
+      <!-- right: lists -->
+      <div class="col">
+        <div style="font-weight:600">List Admin</div>
+        <div id="adminList" class="admin-list"></div>
+
+        <div style="margin-top:12px;font-weight:600">List User (Ga Lunzy counts)</div>
+        <div id="userList" class="user-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USER CARD -->
+  <div class="card" id="userCard" style="display:none;">
+    <div class="header">
+      <div class="h-title">USER DASHBOARD</div>
+      <div>
+        <span id="loggedUser" class="badge"></span>
+        <button class="small-btn secondary" onclick="handleLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>Nomor WhatsApp</label>
+        <input id="nomorInput" placeholder="628xxxx">
+        <button onclick="userBanding()">Fix Banding (Ga Lunzy)</button>
+        <div id="userResult" style="margin-top:10px"></div>
+        <div class="note">Setiap kali kamu menekan tombol di atas, counter <strong>Ga Lunzy</strong> akan bertambah untuk akunmu.</div>
+      </div>
+
+      <div class="col">
+        <div style="font-weight:600">Profil</div>
+        <div style="margin-top:8px">
+          <div><strong>Username:</strong> <span id="profileName"></span></div>
+          <div style="margin-top:8px"><strong>Ga Lunzy:</strong> <span id="profileCount">0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">© 2025 Web Private • Dibuat untuk pembelajaran</div>
+</div>
+
+<script>
+/* ===================== STORAGE KEYS & INIT ===================== */
+const KEY_ADMINS = 'app_admins_v1';
+const KEY_USERS = 'app_users_v1';
+const KEY_SESSION = 'app_session_v1';
+
+let currentSession = null; // { type: 'admin'|'user', username:..., role?:... }
+
+/* Inisialisasi data default bila belum ada */
+function ensureData(){
+  if(!localStorage.getItem(KEY_ADMINS)){
+    const initialAdmins = [
+      { username:'admin', password:'11', role:'superadmin' } // superadmin tidak bisa dihapus
+    ];
+    localStorage.setItem(KEY_ADMINS, JSON.stringify(initialAdmins));
+  }
+  if(!localStorage.getItem(KEY_USERS)){
+    const initialUsers = [
+      // contoh user: { username:'user1', password:'pass', gaLunzy:0 }
+    ];
+    localStorage.setItem(KEY_USERS, JSON.stringify(initialUsers));
+  }
+}
+ensureData();
+
+/* helper read/write */
+function getAdmins(){ return JSON.parse(localStorage.getItem(KEY_ADMINS) || '[]'); }
+function setAdmins(a){ localStorage.setItem(KEY_ADMINS, JSON.stringify(a)); }
+function getUsers(){ return JSON.parse(localStorage.getItem(KEY_USERS) || '[]'); }
+function setUsers(u){ localStorage.setItem(KEY_USERS, JSON.stringify(u)); }
+
+/* ===================== SAMPLE RESET (opsional) ===================== */
+function initSampleData(){
+  const sampleAdmins = [
+    { username:'admin', password:'11', role:'superadmin' },
+    { username:'manager1', password:'man123', role:'admin' }
+  ];
+  const sampleUsers = [
+    { username:'user1', password:'u1pass', gaLunzy:2 },
+    { username:'user2', password:'u2pass', gaLunzy:5 }
+  ];
+  setAdmins(sampleAdmins);
+  setUsers(sampleUsers);
+  alert('Data sample telah di-set. Silakan login dengan admin/11 atau manager1/man123 atau user1/u1pass (user).');
+}
+
+/* ===================== AUTH (LOGIN / LOGOUT) ===================== */
+function handleLogin(){
+  const u = document.getElementById('inpLoginUser').value.trim();
+  const p = document.getElementById('inpLoginPass').value;
+
+  if(!u || !p){ alert('Isi username & password'); return; }
+
+  // cek admin
+  const admins = getAdmins();
+  const foundAdm = admins.find(a => a.username === u && a.password === p);
+  if(foundAdm){
+    currentSession = { type:'admin', username:foundAdm.username, role:foundAdm.role };
+    localStorage.setItem(KEY_SESSION, JSON.stringify(currentSession));
+    showAdminDashboard();
+    return;
+  }
+
+  // cek user
+  const users = getUsers();
+  const foundUser = users.find(x => x.username === u && x.password === p);
+  if(foundUser){
+    currentSession = { type:'user', username:foundUser.username };
+    localStorage.setItem(KEY_SESSION, JSON.stringify(currentSession));
+    showUserDashboard();
+    return;
+  }
+
+  alert('Akun tidak ditemukan!');
+}
+
+/* logout */
+function handleLogout(){
+  currentSession = null;
+  localStorage.removeItem(KEY_SESSION);
+  showLogin();
+}
+
+/* cek session on page load */
+function loadSession(){
+  const s = localStorage.getItem(KEY_SESSION);
+  if(s){
+    try{ currentSession = JSON.parse(s); }catch(e){ currentSession = null; }
+  }
+}
+loadSession();
+
+/* ===================== UI SWITCH ===================== */
+function showLogin(){
+  document.getElementById('loginCard').style.display='block';
+  document.getElementById('adminCard').style.display='none';
+  document.getElementById('userCard').style.display='none';
+}
+function showAdminDashboard(){
+  document.getElementById('loginCard').style.display='none';
+  document.getElementById('adminCard').style.display='block';
+  document.getElementById('userCard').style.display='none';
+  document.getElementById('loggedAdmin').innerText = currentSession.username + (currentSession.role ? ' ('+currentSession.role+')' : '');
+  renderAdminList();
+  renderUserList();
+}
+function showUserDashboard(){
+  document.getElementById('loginCard').style.display='none';
+  document.getElementById('adminCard').style.display='none';
+  document.getElementById('userCard').style.display='block';
+  document.getElementById('loggedUser').innerText = currentSession.username;
+  renderUserProfile();
+}
+
+/* jika ada session aktif on load, langsung tampilkan sesuai role */
+if(currentSession){
+  if(currentSession.type === 'admin') showAdminDashboard();
+  else if(currentSession.type === 'user') showUserDashboard();
+} else {
+  showLogin();
+}
+
+/* ===================== ADMIN: CREATE ADMIN ===================== */
+function createAdmin(){
+  const u = document.getElementById('newAdminUser').value.trim();
+  const p = document.getElementById('newAdminPass').value;
+  const role = document.getElementById('newAdminRole').value;
+
+  if(!u || !p){ alert('Isi username & password admin baru'); return; }
+
+  // hanya superadmin boleh membuat superadmin
+  if(role === 'superadmin'){
+    if(!currentSession || currentSession.role !== 'superadmin'){
+      alert('Hanya superadmin yang bisa membuat superadmin.');
+      return;
+    }
+  }
+
+  let admins = getAdmins();
+  if(admins.find(a => a.username === u)){
+    alert('Username admin sudah ada');
+    return;
+  }
+
+  admins.push({ username: u, password: p, role });
+  setAdmins(admins);
+  document.getElementById('newAdminUser').value = '';
+  document.getElementById('newAdminPass').value = '';
+  renderAdminList();
+  alert('Admin berhasil dibuat.');
+}
+
+/* render admin list */
+function renderAdminList(){
+  const admins = getAdmins();
+  const el = document.getElementById('adminList');
+  el.innerHTML = '';
+  admins.forEach((a, idx) => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    const left = document.createElement('div');
+    left.innerHTML = `<strong>👤 ${a.username}</strong> <span class="note" style="margin-left:8px">[${a.role}]</span>`;
+    const right = document.createElement('div');
+    // delete button: disabled for superadmin
+    const delBtn = document.createElement('button');
+    delBtn.className = 'danger';
+    delBtn.innerText = 'Delete';
+    if(a.role === 'superadmin'){
+      delBtn.disabled = true;
+      delBtn.style.opacity = 0.5;
+      delBtn.title = 'Superadmin tidak bisa dihapus';
+    } else {
+      delBtn.onclick = () => {
+        if(!confirm(`Hapus admin "${a.username}"?`)) return;
+        let admins2 = getAdmins();
+        admins2.splice(idx,1);
+        setAdmins(admins2);
+        renderAdminList();
+      };
+    }
+    right.appendChild(delBtn);
+    div.appendChild(left);
+    div.appendChild(right);
+    el.appendChild(div);
+  });
+}
+
+/* ===================== ADMIN: CREATE USER ===================== */
+function createUser(){
+  const u = document.getElementById('newUserName').value.trim();
+  const p = document.getElementById('newUserPass').value;
+  if(!u || !p){ alert('Isi username & password user'); return; }
+
+  let users = getUsers();
+  if(users.find(x => x.username === u)){
+    alert('Username user sudah ada');
+    return;
+  }
+
+  users.push({ username: u, password: p, gaLunzy: 0 });
+  setUsers(users);
+  document.getElementById('newUserName').value = '';
+  document.getElementById('newUserPass').value = '';
+  renderUserList();
+  alert('User berhasil dibuat.');
+}
+
+/* render user list (admin view) */
+function renderUserList(){
+  const users = getUsers();
+  const el = document.getElementById('userList');
+  el.innerHTML = '';
+  if(users.length === 0){ el.innerHTML = '<div class="note">Belum ada user.</div>'; return; }
+  users.forEach((u, idx) => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    const left = document.createElement('div');
+    left.innerHTML = `<div><strong>👤 ${u.username}</strong></div>
+                      <div class="note">Ga Lunzy: <strong>${u.gaLunzy||0}</strong></div>`;
+    const right = document.createElement('div');
+    // delete button for user
+    const delBtn = document.createElement('button');
+    delBtn.className = 'danger';
+    delBtn.innerText = 'Delete';
+    delBtn.onclick = () => {
+      if(!confirm(`Hapus user "${u.username}"?`)) return;
+      let users2 = getUsers();
+      users2.splice(idx,1);
+      setUsers(users2);
+      renderUserList();
+    };
+
+    right.appendChild(delBtn);
+    div.appendChild(left);
+    div.appendChild(right);
+    el.appendChild(div);
+  });
+}
+
+/* ===================== USER: PROFILE & COUNTER ===================== */
+function renderUserProfile(){
+  const profileName = document.getElementById('profileName');
+  const profileCount = document.getElementById('profileCount');
+  const users = getUsers();
+  const me = users.find(x => x.username === currentSession.username);
+  profileName.innerText = currentSession.username;
+  profileCount.innerText = (me && me.gaLunzy) ? me.gaLunzy : 0;
+}
+
+/* ===================== USER ACTION: BANDlNG (INCREMENTS Ga Lunzy) ===================== */
+async function userBanding(){
+  const nomor = document.getElementById('nomorInput').value.trim();
+  const out = document.getElementById('userResult');
+
+  if(!nomor){ out.innerHTML = '<span style="color:#ff8b8b">Masukkan nomor!</span>'; return; }
+  out.innerHTML = '<span class="loader"></span> Memproses...';
+
+  // NOTE: Kita panggil API yang sama seperti sebelumnya — ini demo UI.
+  // Jika API bermasalah, tetap lakukan increment counter lokal agar tracking tetap berfungsi.
+  try{
+    const res = await fetch(`https://frivate-lunzy4.vercel.app/api/banding?nomor=${encodeURIComponent(nomor)}&apikey=adm`, { method:'GET' });
+    const data = await res.json();
+    out.innerHTML = '<pre>'+JSON.stringify(data,null,2)+'</pre>';
+  }catch(err){
+    out.innerHTML = '<span style="color:#ff8b8b">Gagal menghubungkan API — hasil disimpan lokal.</span>';
+  }
+
+  // increment Ga Lunzy for current user
+  let users = getUsers();
+  const idx = users.findIndex(x => x.username === currentSession.username);
+  if(idx >= 0){
+    users[idx].gaLunzy = (users[idx].gaLunzy || 0) + 1;
+    setUsers(users);
+    renderUserProfile();
+    // jika admin sedang melihat list user, refresh juga
+    renderUserList();
+  }
+}
+
+/* ===================== ADMIN: OPTIONAL BANDlNG FROM ADMIN PANEL (tidak memengaruhi user coun ters) ===================== */
+async function adminBandingTmp(nomor, targetEl){
+  if(!nomor){ targetEl.innerHTML = '<span style="color:#ff8b8b">Masukkan nomor!</span>'; return; }
+  targetEl.innerHTML = '<span class="loader"></span> Memproses...';
+  try{
+    const res = await fetch(`https://frivate-lunzy4.vercel.app/api/banding?nomor=${encodeURIComponent(nomor)}&apikey=adminv`);
+    const data = await res.json();
+    targetEl.innerHTML = '<pre>'+JSON.stringify(data,null,2)+'</pre>';
+  }catch(e){
+    targetEl.innerHTML = '<span style="color:#ff8b8b">Gagal menghubungkan API.</span>';
+  }
+}
+
+/* ===================== HELPERS ===================== */
+/* simple sanitize (very small) */
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+
+</script>
 </body>
-</html>
+        </html>
